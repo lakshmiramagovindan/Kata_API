@@ -2,17 +2,17 @@ Feature: To validate the authentication for the API endpoints
 
   @authentication @positive
   Scenario: To verify the authentication end point with valid credentials and perform schema validation
-    Given User writes the authentication payload with "admin" and "password"
-    When User makes a "POST" request on the "postAuthEndpoint" endpoint
-    Then The API status code should be "200"
-    And "token" in response body should not be empty
+    Given User logs in with "admin" and "password"
+    When User makes a "POST" action to the "postAuthEndpoint"
+    Then The system should respond with status "200"
+    And "token" in response should not be empty
     Then Response should match the "authenticationResponseSchema" schema
 
   @authentication @negative
   Scenario Outline: To verify the authentication end point with negative status codes
-    Given User writes the authentication payload with "<username>" and "<password>"
-    When User makes a "<httpMethod>" request on the "<endPoint>" endpoint
-    Then The API status code should be "<statusCode>"
+    Given User logs in with "<username>" and "<password>"
+    When User makes a "<httpMethod>" action to the "<endPoint>"
+    Then The system should respond with status "<statusCode>"
 
     Examples:
     | username | password | httpMethod | endPoint                | statusCode |

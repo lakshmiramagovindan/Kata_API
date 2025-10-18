@@ -13,8 +13,8 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInC
 public class CommonStepDefinitions extends Utils {
     JsonPath json;
 
-    @When("User makes a {string} request on the {string} endpoint")
-    public void userMakesARequestOnTheEndpoint(String httpMethod, String endPointKey) {
+    @When("User makes a {string} action to the {string}")
+    public void userMakesAActionToTheEndpoint(String httpMethod, String endPointKey) {
         List<String> supportedMethods = List.of("GET", "POST", "PUT", "DELETE", "PATCH");
         String method = httpMethod.toUpperCase();
         String endPoint = Routes.getEndpoint(endPointKey);
@@ -24,13 +24,13 @@ public class CommonStepDefinitions extends Utils {
         res = req.when().request(method, endPoint);
     }
 
-    @Then("The API status code should be {string}")
-    public void theAPIStatusCodeShouldBe(String statusCode) {
+    @Then("The system should respond with status {string}")
+    public void theSystemShouldRespondWithStatus(String statusCode) {
         Assert.assertEquals(res.getStatusCode(), Integer.parseInt(statusCode));
     }
 
-    @And("{string} in response body should not be empty")
-    public void inResponseBodyShouldNotBeEmpty(String responseKey) {
+    @And("{string} in response should not be empty")
+    public void inResponseShouldNotBeEmpty(String responseKey) {
         json = res.jsonPath();
         Assert.assertNotNull(json.get(responseKey));
     }
