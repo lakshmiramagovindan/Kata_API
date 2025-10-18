@@ -7,7 +7,7 @@ public class Routes {
             "baseURI", "https://automationintesting.online/api",
             "postAuthEndpoint", "/auth/login",
             "postAuthEndpointInvalid", "/auto/login",
-            "getBookingEndpoint", "/booking",
+            "createBookingEndpoint", "/booking",
             "updateDeleteBookingEndpoint", "/booking/{id}",
             "getHealthEndpoint", "/booking/actuator/health"
     );
