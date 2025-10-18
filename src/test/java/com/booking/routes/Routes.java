@@ -1,11 +1,18 @@
 package com.booking.routes;
 
+import java.util.Map;
+
 public class Routes {
+    private static final Map<String, String> apiRoutes = Map.of(
+            "baseURI", "https://automationintesting.online/api",
+            "postAuthEndpoint", "/auth/login",
+            "postAuthEndpointInvalid", "/auto/login",
+            "getBookingEndpoint", "/booking",
+            "updateDeleteBookingEndpoint", "/booking/{id}",
+            "getHealthEndpoint", "/booking/actuator/health"
+    );
 
-    public static final String baseURI = "https://automationintesting.online/api";
-    public static final String getHealthEndpoint = "/booking/actuator/health";
-    public static final String postAuthEndpoint = "/auth/login";
-    public static final String getBookingEndpoint = "/booking";
-    public static final String updateDeleteBookingEndpoint = "/booking/{id}";
-
+    public static String getEndpoint(String endPointKey) {
+        return apiRoutes.getOrDefault(endPointKey, "");
+    }
 }

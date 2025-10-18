@@ -5,13 +5,15 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 public class Utils {
-    RequestSpecification req;
+    public static RequestSpecification req;
+    public static Response res;
     public RequestSpecification requestSpecification() {
         req = new RequestSpecBuilder()
-                .setBaseUri(Routes.baseURI)
+                .setBaseUri(Routes.getEndpoint("baseURI"))
                 .addFilter(new RequestLoggingFilter(System.out))
                 .addFilter(new ResponseLoggingFilter(System.out))
                 .setContentType(ContentType.JSON)
