@@ -9,7 +9,8 @@ public class Routes {
             "postAuthEndpointInvalid", "/auto/login",
             "createBookingEndpoint", "/booking",
             "createBookingEndpointInvalid", "/book",
-            "updateDeleteBookingEndpoint", "/booking/{id}",
+            "getUpdateDeleteBookingEndpoint", "/booking/{id}",
+            "getUpdateDeleteBookingEndpointInvalid", "/book/{id}",
             "getHealthEndpoint", "/booking/actuator/health"
     );
 
