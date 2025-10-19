@@ -28,7 +28,11 @@
           "type": "string",
           "format": "date"
         }
-      }
+      },
+      "required": [
+        "checkin",
+        "checkout"
+      ]
     },
     "email": {
       "type": "string",
@@ -37,5 +41,15 @@
     "phone": {
       "type": "string"
     }
-  }
+  },
+  "required": [
+    "bookingid",
+    "roomid",
+    "firstname",
+    "lastname",
+    "depositpaid",
+    "bookingdates",
+    "email",
+    "phone"
+  ]
 }
