@@ -2,7 +2,7 @@ Feature: To validate the create booking API endpoint
 
   @createBooking @positive
   Scenario: To verify the create booking endpoint with valid payload.
-    Given User creates booking with:
+    Given User creates or modifies booking with:
       | key         | value                |
       | roomid      | RANDOM_1_10          |
       | firstname   | John                 |
@@ -17,13 +17,13 @@ Feature: To validate the create booking API endpoint
     Then The system should respond with description "Created"
     And "bookingid" in response should not be empty
     And Store "bookingid" from response as "bookingID" in config file
-    And Response should match the "createBookingResponseSchema" schema
     And "roomid" in response should not be empty
     And "firstname" in response body should be "John"
     And "lastname" in response body should be "Doe"
     And "depositpaid" in response body should be "true"
     And "bookingdates.checkin" in response should not be empty
     And "bookingdates.checkout" in response should not be empty
+    And Response should match the "createBookingResponseSchema" schema
     #Note: Validations from lines 29–30 will fail since API is not designed to have email, phone as part of response.Scenario:
     #Booking.yaml mentions email and phone also as part of our requests
     And "email" in response body should be "john.doe@example.com"
@@ -31,7 +31,7 @@ Feature: To validate the create booking API endpoint
 
   @createBooking @negative
   Scenario Outline: To verify the negative scenarios of create booking end point by passing incorrect payload
-    Given User creates booking with:
+    Given User creates or modifies booking with:
       | key         | value         |
       | roomid      | <roomid>      |
       | firstname   | <firstname>   |
@@ -92,7 +92,7 @@ Feature: To validate the create booking API endpoint
 
   @createBooking @negative
   Scenario Outline: To verify the create booking endpoint with valid payload and invalid request specifications.
-    Given User creates booking with:
+    Given User creates or modifies booking with:
       | key         | value                |
       | roomid      | RANDOM_1_10          |
       | firstname   | John                 |
