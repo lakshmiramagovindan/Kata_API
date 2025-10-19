@@ -6,8 +6,6 @@ import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
 import org.junit.Assert;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.booking.utils.Utils.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -55,24 +53,16 @@ public class CommonStepDefinitions {
     }
 
     @And("{string} in response body should be {string}")
-    public void inResponseBodyShouldBe(String key, String value) {
-        // Write code here that turns the phrase above into concrete actions
+    public void inResponseBodyShouldBe(String key, String expectedRawValue) {
         JsonPath json = res.jsonPath();
-        Object responseKey = json.get(key);
+        Object responseValue = json.get(key);
+        Assert.assertNotNull(responseValue);
+        String expectedValue = processDate(sanitizeDateValue(expectedRawValue));
+        String actualAsString = convertActualValue(responseValue);
 
-        if(responseKey instanceof String) {
-            Assert.assertEquals(responseKey.toString(), value);
-        } else if(responseKey instanceof List<?>) {
-            @SuppressWarnings("unchecked")
-            List<Object> list = (List<Object>) responseKey;
-            String joined = list.stream()
-                    .map(String::valueOf)
-                    .collect(Collectors.joining(", "));
-            Assert.assertEquals(joined, value);
-        } else {
-            Assert.assertEquals(responseKey, Integer.parseInt(value));
-        }
+        Assert.assertEquals(actualAsString.replace("[\\[\\]]", " ").trim(), expectedValue);
     }
+
 
     @Then("Response should match the {string} schema")
     public void shouldMatchTheSchema(String schemaFileName) {

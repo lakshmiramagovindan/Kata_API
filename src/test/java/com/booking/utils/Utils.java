@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Utils {
     public static RequestSpecification req;
@@ -91,6 +92,14 @@ public class Utils {
             result = value;
         }
         return result;
+    }
+
+    public static String convertActualValue(Object actual) {
+        return (actual instanceof List<?>)
+                ? ((List<?>) actual).stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "))
+                : String.valueOf(actual);
     }
 
     public static String sanitizeDateValue(String value) {
