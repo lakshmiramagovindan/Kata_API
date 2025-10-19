@@ -11,7 +11,7 @@ import java.util.Map;
 public class BookingStepDefinition {
     private final Payload payload = new Payload();
 
-    @Given("User creates booking with:")
+    @Given("User creates or modifies booking with:")
     public void userCreatesBookingWith(DataTable dataTable) {
         Map<String, String> input = dataTable.asMap(String.class, String.class);
 
