@@ -10,14 +10,18 @@ import io.restassured.specification.RequestSpecification;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
 public class Utils {
     public static RequestSpecification req;
     public static Response res;
     static Properties prop;
     private static final String configFilePath = "C:\\Users\\lsree\\API_Testing_kata\\src\\test\\resources\\config\\config.properties";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public static RequestSpecification baseRequestSpecification() {
         if (req == null) {
@@ -52,12 +56,12 @@ public class Utils {
     public static String requestWithOrWithoutAuthentication(String configKey) throws IOException {
         String token = "";
         if (!configKey.isEmpty()) {
-             token = readWritePropertyFile(configKey);
+             token = readPropertyFile(configKey);
         }
         return token;
     }
 
-    public static void readWritePropertyFile(String configKey, String configValue) throws IOException {
+    public static void writePropertyFile(String configKey, String configValue) throws IOException {
         prop = new Properties();
         try (FileInputStream fis = new FileInputStream(configFilePath)) {
             prop.load(fis);
@@ -68,11 +72,39 @@ public class Utils {
         }
     }
 
-    public static String readWritePropertyFile(String configKey) throws IOException {
+    public static String readPropertyFile(String configKey) throws IOException {
         prop = new Properties();
         try (FileInputStream fis = new FileInputStream(configFilePath)) {
             prop.load(fis);
             return prop.getProperty(configKey);
         }
+    }
+
+    public static String processDate(String value) {
+        String result;
+        if ("TODAY".equalsIgnoreCase(value)) {
+            result = LocalDate.now().format(FORMATTER);
+        } else if (value.startsWith("+")) {
+            int days = Integer.parseInt(value.substring(1));
+            result = LocalDate.now().plusDays(days).format(FORMATTER);
+        } else {
+            result = value;
+        }
+        return result;
+    }
+
+    public static String sanitizeDateValue(String value) {
+        return (value == null) ? "" : value;
+    }
+
+    public static int parseRoomId(String value) {
+        int roomId;
+
+        if ("RANDOM_1_10".equalsIgnoreCase(value)) {
+            roomId = new Random().nextInt(10) + 1;
+        } else {
+            roomId = 0;
+        }
+        return roomId;
     }
 }
