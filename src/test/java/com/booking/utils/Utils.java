@@ -21,7 +21,7 @@ public class Utils {
     public static RequestSpecification req;
     public static Response res;
     static Properties prop;
-    private static final String configFilePath = "C:\\Users\\lsree\\API_Testing_kata\\src\\test\\resources\\config\\config.properties";
+    private static final String configFilePath = "src/test/resources/config/config.properties";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public static RequestSpecification baseRequestSpecification() {
