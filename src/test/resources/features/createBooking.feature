@@ -16,8 +16,8 @@ Feature: To validate the create booking API endpoint
     Then The system should respond with status "201"
     Then The system should respond with description "Created"
     And "bookingid" in response should not be empty
-    And Response should match the "createBookingResponseSchema" schema
     And Store "bookingid" from response as "bookingID" in config file
+    And Response should match the "createBookingResponseSchema" schema
     And "roomid" in response should not be empty
     And "firstname" in response body should be "John"
     And "lastname" in response body should be "Doe"
