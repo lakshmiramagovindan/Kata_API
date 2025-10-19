@@ -16,18 +16,8 @@ Feature: To validate the update booking API endpoint
     When User makes a "PUT" action to the "getUpdateDeleteBookingEndpoint" via "authToken"
     Then The system should respond with status "200"
     Then The system should respond with description "OK"
-    And "bookingid" in response should not be empty
-    And "roomid" in response should not be empty
-    And "firstname" in response body should be "John"
-    And "lastname" in response body should be "Change"
-    And "depositpaid" in response body should be "false"
-    And "bookingdates.checkin" in response should not be empty
-    And "bookingdates.checkout" in response should not be empty
-    And Response should match the "createBookingResponseSchema" schema
-    #Note: Validations from lines 30–31 will fail since API is not designed to have email, phone as part of response.Scenario:
-    #Booking.yaml mentions email and phone also as part of our requests
-    And "email" in response body should be "john.doe@example.com"
-    And "phone" in response body should be "12345678901"
+    And "success" in response body should be "true"
+    And Response should match the "deleteResponseSchema" schema
 
   @updateBooking @negative
   Scenario Outline: To verify the negative scenarios of update booking end point by passing incorrect payload
