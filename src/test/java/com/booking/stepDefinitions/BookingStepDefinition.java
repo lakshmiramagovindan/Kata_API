@@ -7,10 +7,20 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import static com.booking.utils.Utils.*;
 import java.util.Map;
-
+/**
+ * Step definitions for booking-related Cucumber steps.
+ */
 public class BookingStepDefinition {
+    /** Utility class to build request payloads. */
     private final Payload payload = new Payload();
-
+    /**
+     * Cucumber step: Creates or modifies a booking using provided data.
+     * <p>
+     * Reads input from a Cucumber data table, builds booking and booking date
+     * objects, and sets the request body accordingly.
+     *
+     * @param dataTable a table containing booking details
+     */
     @Given("User creates or modifies booking with:")
     public void userCreatesBookingWith(DataTable dataTable) {
         Map<String, String> input = dataTable.asMap(String.class, String.class);
