@@ -1,12 +1,12 @@
 package com.booking.stepDefinitions;
 
 import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
 import org.junit.Assert;
 import java.io.IOException;
-
 import static com.booking.utils.Utils.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,7 +30,6 @@ public class CommonStepDefinitions {
         String endPoint = validEndPointCheck(endPointKey);
         String configValue = requestWithOrWithoutAuthentication(configKey);
         res = req
-                .header("Cookie", "token=" + configValue)
                 .auth().oauth2(configValue)
                 .when()
                 .request(method, endPoint);
@@ -88,5 +87,13 @@ public class CommonStepDefinitions {
             return;
         }
         writePropertyFile(configKey, configValue);
+    }
+
+    @Given("User sends basic information {string} and the login token {string}")
+    public void userSendsBasicInformationAndTheLoginToken(String pathParam, String cookieToken) throws IOException {
+        String configValue = requestWithOrWithoutAuthentication(cookieToken);
+        req = req
+                .pathParam("id", readPropertyFile(pathParam))
+                .header("Cookie", "token=" + configValue);
     }
 }
