@@ -19,7 +19,7 @@ Feature: To validate the authentication for the API endpoints
     And Response should match the "<schemaFileName>" schema
 
     Examples:
-    | username | password | httpMethod | endPoint                | statusCode | description        | schemaFileName                |
+    | username | password | httpMethod | endPoint                | statusCode | description        | schemaFileName            |
     | user1    | password | POST       | postAuthEndpoint        | 401        | Unauthorized       | authenticationErrorSchema |
     | admin    | p@sswOrd | POST       | postAuthEndpoint        | 401        | Unauthorized       | authenticationErrorSchema |
     | admin    | password | GET        | postAuthEndpoint        | 405        | Method Not Allowed |                           |
