@@ -6,6 +6,8 @@ import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
 import org.junit.Assert;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.booking.utils.Utils.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -25,11 +27,12 @@ public class CommonStepDefinitions {
 
     }
     @When("User makes a {string} action to the {string} via {string}")
-    public void userMakesAActionToTheEndpointVia(String httpMethod, String endPointKey, String configKey) throws IOException {
+    public void userMakesAActionToTheEndpointViaAuthentication(String httpMethod, String endPointKey, String configKey) throws IOException {
         String method = validHttpMethodCheck(httpMethod);
         String endPoint = validEndPointCheck(endPointKey);
         String configValue = requestWithOrWithoutAuthentication(configKey);
         res = req
+                .header("Cookie", "token=" + configValue)
                 .auth().oauth2(configValue)
                 .when()
                 .request(method, endPoint);
@@ -51,6 +54,26 @@ public class CommonStepDefinitions {
         Assert.assertNotNull(json.get(responseKey));
     }
 
+    @And("{string} in response body should be {string}")
+    public void inResponseBodyShouldBe(String key, String value) {
+        // Write code here that turns the phrase above into concrete actions
+        JsonPath json = res.jsonPath();
+        Object responseKey = json.get(key);
+
+        if(responseKey instanceof String) {
+            Assert.assertEquals(responseKey.toString(), value);
+        } else if(responseKey instanceof List<?>) {
+            @SuppressWarnings("unchecked")
+            List<Object> list = (List<Object>) responseKey;
+            String joined = list.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(", "));
+            Assert.assertEquals(joined, value);
+        } else {
+            Assert.assertEquals(responseKey, Integer.parseInt(value));
+        }
+    }
+
     @Then("Response should match the {string} schema")
     public void shouldMatchTheSchema(String schemaFileName) {
         if(schemaFileName != null && !schemaFileName.trim().isEmpty()) {
@@ -65,7 +88,15 @@ public class CommonStepDefinitions {
     @And("Store {string} from response as {string} in config file")
     public void storeFromResponseAsInConfigFile(String responseKey, String configKey) throws IOException {
         json = res.jsonPath();
-        String configValue = json.get(responseKey);
-        readWritePropertyFile(configKey, configValue);
+        Object rawValue = json.get(responseKey);
+        String configValue;
+        if (rawValue instanceof Integer) {
+            configValue = String.valueOf(rawValue);
+        } else if (rawValue instanceof String) {
+            configValue = (String) rawValue;
+        } else {
+            return;
+        }
+        writePropertyFile(configKey, configValue);
     }
 }
