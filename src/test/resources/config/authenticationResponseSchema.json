@@ -5,5 +5,8 @@
     "token": {
       "type": "string"
     }
-  }
+  },
+  "required": [
+    "token"
+  ]
 }

@@ -27,7 +27,7 @@ Feature: To validate the authentication for the API endpoints
     | admin    | password | DELETE     | postAuthEndpoint        | 405        | Method Not Allowed |                           |
     | admin    | password | PATCH      | postAuthEndpoint        | 405        | Method Not Allowed |                           |
     | admin    | password | POST       | postAuthEndpointInvalid | 404        | Not Found          |                           |
-    # Note: The following test cases (line no 17-19) may fail as the API is not yet configured to return
+    # Note: The following test cases (line no 32-34) may fail as the API is not yet configured to return
     # 400 Bad Request for missing mandatory input fields.
     |          | password | POST       | postAuthEndpoint        | 400        | Bad Request        |                           |
     | admin    |          | POST       | postAuthEndpoint        | 400        | Bad Request        |                           |
