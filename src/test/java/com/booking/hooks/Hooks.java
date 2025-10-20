@@ -1,9 +1,10 @@
 package com.booking.hooks;
 
+import com.booking.context.ScenarioContextHolder;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
-import static com.booking.utils.Utils.*;
-import static io.restassured.RestAssured.given;
+import com.booking.utils.Utils;
+import io.restassured.RestAssured;
 
 public class Hooks {
     /**
@@ -14,8 +15,9 @@ public class Hooks {
      */
     @Before
     public void setUp() {
-        req = given()
-                .spec(baseRequestSpecification());
+        ScenarioContextHolder.getContext()
+                .setReq(RestAssured.given()
+                .spec(Utils.baseRequestSpecification()));
     }
     /**
      * Teardown method executed after each test scenario.
@@ -23,7 +25,7 @@ public class Hooks {
      */
     @After
     public void tearDown() {
-        req = null;
+        ScenarioContextHolder.clear();
         System.out.println("Test scenario finished. Resources cleaned up.");
     }
 }
