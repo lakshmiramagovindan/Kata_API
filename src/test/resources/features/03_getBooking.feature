@@ -13,7 +13,7 @@ Feature: To validate the get booking API endpoint
       | checkout    | +4                   |
       | email       | john.doe@example.com |
       | phone       | 12345678901          |
-    When User makes a "POST" action to the "createBookingEndpoint" with ""
+    When User makes a "POST" action to the "createBookingEndpoint"
     Then The system should respond with status "201"
     And The system should respond with description "Created"
     And Store "bookingid" from response as "bookingID" in config file

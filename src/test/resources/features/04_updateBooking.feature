@@ -13,12 +13,13 @@ Feature: To validate the update booking API endpoint
       | checkout    | +7                   |
       | email       | john.doe@example.com |
       | phone       | 12345678901          |
-    When User makes a "POST" action to the "createBookingEndpoint" with ""
+    When User makes a "POST" action to the "createBookingEndpoint"
     Then The system should respond with status "201"
     And Store "bookingid" from response as "bookingID" in config file
 
   @updateBooking @positive @e2e
   Scenario: To verify the update booking endpoint with valid payload.
+  Comments: Email and Phone validation in response will fail due to Observation no.5 mentioned in README file
     Given User creates or modifies booking with:
       | key         | value                |
       | roomid      | RANDOM_1_10          |
@@ -38,6 +39,7 @@ Feature: To validate the update booking API endpoint
 
   @updateBooking @negative
   Scenario Outline: To verify the negative scenarios of update booking end point by passing incorrect payload
+  Comments: Lastname, missing phone/email and dates validation scenarios will fail due to Observation no.6, 7, 8 mentioned in README file
     Given User creates or modifies booking with:
       | key         | value         |
       | roomid      | <roomid>      |
@@ -100,6 +102,7 @@ Feature: To validate the update booking API endpoint
 
   @updateBooking @negative
   Scenario Outline: To verify the update booking endpoint with valid payload and invalid request specifications.
+  Comments: Missing token in cookie scenario will fail due to Observation no.9 mentioned in README file
     Given User creates or modifies booking with:
       | key         | value                |
       | roomid      | RANDOM_1_10          |

@@ -13,7 +13,7 @@ Feature: To validate the get booking API endpoint
       | checkout    | +11                  |
       | email       | john.doe@example.com |
       | phone       | 12345678901          |
-    When User makes a "POST" action to the "createBookingEndpoint" with ""
+    When User makes a "POST" action to the "createBookingEndpoint"
     Then The system should respond with status "201"
     And Store "bookingid" from response as "bookingID" in config file
 
@@ -28,6 +28,7 @@ Feature: To validate the get booking API endpoint
 
   @deleteBooking @negative
   Scenario Outline: To verify the delete booking endpoint with invalid request specifications.
+  Comments: Incorrect BookingId, missing authToken and token in cookie scenarios will fail due to Observation no.10 mentioned in README file
     Given User sends basic information "<parameter>" and the login token "<cookieToken>"
     When User makes a "DELETE" action to the "<endPoint>" with "<authKey>"
     Then The system should respond with status "<statusCode>"
