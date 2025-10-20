@@ -26,7 +26,7 @@ public class ResponseStepDefinitions {
     @Then("The system should respond with status {string}")
     public void theSystemShouldRespondWithStatus(String statusCode) {
         Response res = ScenarioContextHolder.getContext().getRes();
-        Assert.assertEquals(res.getStatusCode(), Integer.parseInt(statusCode));
+        Assert.assertEquals(Integer.parseInt(statusCode), res.getStatusCode());
     }
 
     /**
@@ -68,7 +68,7 @@ public class ResponseStepDefinitions {
         String expectedValue = processDate(sanitizeDateValue(expectedRawValue));
         String actualAsString = convertActualValue(responseValue);
 
-        Assert.assertEquals(actualAsString.replace("[\\[\\]]", " ").trim(), expectedValue);
+        Assert.assertEquals(expectedValue, actualAsString.replace("[\\[\\]]", " ").trim());
     }
 
     /**
@@ -87,13 +87,16 @@ public class ResponseStepDefinitions {
             String field = row.get("field");
             String condition = row.get("condition").toLowerCase();
             String expectedValue = row.get("expected value");
-
-            if ("equals".equalsIgnoreCase(condition)) {
-                inResponseBodyShouldBe(field, expectedValue);
-            } else if ("not empty".equalsIgnoreCase(condition)) {
-                inResponseShouldNotBeEmpty(field);
-            } else {
-                throw new IllegalArgumentException(String.format("Unsupported condition: %s", condition));
+            try {
+                if ("equals".equalsIgnoreCase(condition)) {
+                    inResponseBodyShouldBe(field, expectedValue);
+                } else {
+                    inResponseShouldNotBeEmpty(field);
+                }
+            } catch (AssertionError e) {
+                throw new AssertionError(String.format(
+                        "Unsupported condition %s or Validation failed for field '%s' with condition '%s'. Expected: '%s'.", condition,
+                        field, condition, expectedValue));
             }
         }
     }

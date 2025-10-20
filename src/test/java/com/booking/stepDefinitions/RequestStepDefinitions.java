@@ -69,8 +69,7 @@ public class RequestStepDefinitions {
 
         // If authPart is like "authToken", extract token key; else no auth
         if (authPart != null && !authPart.trim().isEmpty()) {
-            String configKey = authPart.trim().substring(4).trim(); // remove "via "
-            String token = requestWithOrWithoutAuthentication(configKey);
+            String token = requestWithOrWithoutAuthentication(authPart);
 
             res = req
                     .auth().oauth2(token)
