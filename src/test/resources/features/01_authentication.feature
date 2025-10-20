@@ -3,7 +3,7 @@ Feature: To validate the authentication for the API endpoints
   @authentication @positive @e2e
   Scenario: To verify the authentication end point with valid credentials and perform schema validation
     Given User logs in with "admin" and "password"
-    When User makes a "POST" action to the "postAuthEndpoint" with ""
+    When User makes a "POST" action to the "postAuthEndpoint"
     Then The system should respond with status "200"
     Then The system should respond with description "OK"
     And "token" in response should not be empty
@@ -12,8 +12,9 @@ Feature: To validate the authentication for the API endpoints
 
   @authentication @negative
   Scenario Outline: To verify the authentication end point with negative status codes
+  Comments: Missing username or password scenario will fail due to Observation no.4 mentioned in README file
     Given User logs in with "<username>" and "<password>"
-    When User makes a "POST" action to the "<endPoint>" with ""
+    When User makes a "POST" action to the "<endPoint>"
     Then The system should respond with status "<statusCode>"
     And The system should respond with description "<description>"
     And Response should match the "<schemaFileName>" schema

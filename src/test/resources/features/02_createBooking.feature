@@ -2,6 +2,7 @@ Feature: To validate the create booking API endpoint
 
   @createBooking @positive @e2e
   Scenario: To verify the create booking endpoint with valid payload.
+  Comments: Email and Phone validation in response will fail due to Observation no.5 mentioned in README file
     Given User creates or modifies booking with:
       | key         | value                |
       | roomid      | RANDOM_1_10          |
@@ -12,7 +13,7 @@ Feature: To validate the create booking API endpoint
       | checkout    | +2                   |
       | email       | john.doe@example.com |
       | phone       | 12345678901          |
-    When User makes a "POST" action to the "createBookingEndpoint" with ""
+    When User makes a "POST" action to the "createBookingEndpoint"
     Then The system should respond with status "201"
     And Store "bookingid" from response as "bookingID" in config file
     And the response fields should match:
@@ -32,6 +33,7 @@ Feature: To validate the create booking API endpoint
 
   @createBooking @negative
   Scenario Outline: To verify the negative scenarios of create booking end point by passing incorrect payload
+  Comments: Lastname, missing phone/email and dates validation scenarios will fail due to Observation no.6, 7, 8 mentioned in README file
     Given User creates or modifies booking with:
       | key         | value         |
       | roomid      | <roomid>      |
@@ -42,7 +44,7 @@ Feature: To validate the create booking API endpoint
       | checkout    | <checkout>    |
       | email       | <email>       |
       | phone       | <phone>       |
-    When User makes a "POST" action to the "createBookingEndpoint" with ""
+    When User makes a "POST" action to the "createBookingEndpoint"
     Then The system should respond with status "400"
     And The system should respond with description "Bad Request"
     And "errors" in response body should be "<message>"
@@ -103,7 +105,7 @@ Feature: To validate the create booking API endpoint
       | checkout    | +2                   |
       | email       | john.doe@example.com |
       | phone       | 12345678901          |
-    When User makes a "POST" action to the "createBookingEndpointInvalid" with ""
+    When User makes a "POST" action to the "createBookingEndpointInvalid"
     Then The system should respond with status "404"
     And The system should respond with description "Not Found"
 
