@@ -4,9 +4,10 @@ import com.booking.pojo.AuthPOJO;
 import com.booking.pojo.BookingPOJO;
 
 /**
- * Utility class for creating payload objects for API requests.
+ * Factory class for creating payload objects for API requests.
  */
-public class Payload {
+public class PayloadFactory {
+
     /**
      * Creates an authentication payload with the given username and password.
      *
@@ -14,7 +15,7 @@ public class Payload {
      * @param password the password for authentication
      * @return an AuthPOJO containing the provided credentials
      */
-    public AuthPOJO authPayload(String username, String password) {
+    public AuthPOJO createAuthPayload(String username, String password) {
         return new AuthPOJO(username, password);
     }
 
@@ -24,7 +25,7 @@ public class Payload {
      * @param bookingPOJO the booking details
      * @return the same BookingPOJO instance
      */
-    public BookingPOJO bookingPayload(BookingPOJO bookingPOJO) {
+    public BookingPOJO createBookingPayload(BookingPOJO bookingPOJO) {
         return bookingPOJO;
     }
 }
