@@ -1,7 +1,8 @@
 Feature: To validate the update booking API endpoint
 
-  @createBooking @positive
+  @createBooking
   Scenario: To create booking with valid payload.
+  Comments: This scenario is added to have a separate booking id to avoid interdependency between feature files
     Given User creates or modifies booking with:
       | key         | value                |
       | roomid      | RANDOM_1_10          |
@@ -123,3 +124,12 @@ Feature: To validate the update booking API endpoint
       # Expected: 403 with "Forbidden"
       # Actual: Random Status Codes
       | bookingID      | authToken   | getUpdateDeleteBookingEndpoint        |           | 403        | Forbidden   |
+
+  @deleteBooking
+  Scenario: To delete the created booking
+  Comments: This scenario is added to ensure there are no conflicts to roomid in the next creation
+    Given User sends basic information "bookingID" and the login token "authToken"
+    When User makes a "DELETE" action to the "getUpdateDeleteBookingEndpoint" with "authToken"
+    Then The system should respond with status "200"
+    And The system should respond with description "OK"
+    And "success" in response body should be "true"

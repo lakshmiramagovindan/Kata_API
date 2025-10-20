@@ -1,7 +1,8 @@
 Feature: To validate the get booking API endpoint
 
-  @createBooking @positive
+  @createBooking
   Scenario: To create booking with valid payload.
+  Comments: This scenario is added to have a separate booking id to avoid interdependency between feature files
     Given User creates or modifies booking with:
       | key         | value                |
       | roomid      | RANDOM_1_10          |
