@@ -1,5 +1,22 @@
 Feature: To validate the get booking API endpoint
 
+  @createBooking @positive
+  Scenario: To create booking with valid payload.
+    Given User creates or modifies booking with:
+      | key         | value                |
+      | roomid      | RANDOM_1_10          |
+      | firstname   | John                 |
+      | lastname    | Doe                  |
+      | depositpaid | true                 |
+      | checkin     | +3                   |
+      | checkout    | +4                   |
+      | email       | john.doe@example.com |
+      | phone       | 12345678901          |
+    When User makes a "POST" action to the "createBookingEndpoint" with ""
+    Then The system should respond with status "201"
+    And The system should respond with description "Created"
+    And Store "bookingid" from response as "bookingID" in config file
+
   @getBooking @positive
   Scenario: To verify the get booking endpoint with valid parameters.
     Given User sends basic information "bookingID" and the login token "authToken"
@@ -7,18 +24,18 @@ Feature: To validate the get booking API endpoint
     Then The system should respond with status "200"
     Then The system should respond with description "OK"
     Then the response fields should match:
-      | field                   | condition   | expected value          |
-      | bookingid               | not empty   |                        |
-      | roomid                  | not empty   |                        |
-      | firstname               | equals      | John                   |
-      | lastname                | equals      | Doe                    |
-      | depositpaid             | equals      | true                   |
-      | bookingdates.checkin    | not empty   |                        |
-      | bookingdates.checkout   | not empty   |                        |
+      | field                 | condition | expected value       |
+      | bookingid             | not empty |                      |
+      | roomid                | not empty |                      |
+      | firstname             | equals    | John                 |
+      | lastname              | equals    | Doe                  |
+      | depositpaid           | equals    | true                 |
+      | bookingdates.checkin  | not empty |                      |
+      | bookingdates.checkout | not empty |                      |
       #Note: Validations from lines 20-21 will fail since API is not designed to have email, phone as part of response.Scenario:
     #Booking.yaml mentions email and phone also as part of our requests
-      | email                   | equals      | john.doe@example.com    |
-      | phone                   | equals      | 12345678901            |
+      | email                 | equals    | john.doe@example.com |
+      | phone                 | equals    | 12345678901          |
     And Response should match the "createBookingResponseSchema" schema
 
   @getBooking @negative

@@ -1,5 +1,21 @@
 Feature: To validate the update booking API endpoint
 
+  @createBooking @positive
+  Scenario: To create booking with valid payload.
+    Given User creates or modifies booking with:
+      | key         | value                |
+      | roomid      | RANDOM_1_10          |
+      | firstname   | John                 |
+      | lastname    | Doe                  |
+      | depositpaid | true                 |
+      | checkin     | +6                   |
+      | checkout    | +7                   |
+      | email       | john.doe@example.com |
+      | phone       | 12345678901          |
+    When User makes a "POST" action to the "createBookingEndpoint" with ""
+    Then The system should respond with status "201"
+    And Store "bookingid" from response as "bookingID" in config file
+
   @updateBooking @positive
   Scenario: To verify the update booking endpoint with valid payload.
     Given User creates or modifies booking with:
