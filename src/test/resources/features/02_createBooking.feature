@@ -1,6 +1,6 @@
 Feature: To validate the create booking API endpoint
 
-  @createBooking @positive
+  @createBooking @positive @e2e
   Scenario: To verify the create booking endpoint with valid payload.
     Given User creates or modifies booking with:
       | key         | value                |

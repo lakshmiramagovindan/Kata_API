@@ -17,7 +17,7 @@ Feature: To validate the get booking API endpoint
     Then The system should respond with status "201"
     And Store "bookingid" from response as "bookingID" in config file
 
-  @deleteBooking @positive
+  @deleteBooking @positive @e2e
   Scenario: To verify the delete booking endpoint with valid parameters.
     Given User sends basic information "bookingID" and the login token "authToken"
     When User makes a "DELETE" action to the "getUpdateDeleteBookingEndpoint" with "authToken"

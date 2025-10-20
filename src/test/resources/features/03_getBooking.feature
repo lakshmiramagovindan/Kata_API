@@ -18,7 +18,7 @@ Feature: To validate the get booking API endpoint
     And The system should respond with description "Created"
     And Store "bookingid" from response as "bookingID" in config file
 
-  @getBooking @positive
+  @getBooking @positive @e2e
   Scenario: To verify the get booking endpoint with valid parameters.
     Given User sends basic information "bookingID" and the login token "authToken"
     When User makes a "GET" action to the "getUpdateDeleteBookingEndpoint" with "authToken"

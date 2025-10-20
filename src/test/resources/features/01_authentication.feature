@@ -1,6 +1,6 @@
 Feature: To validate the authentication for the API endpoints
 
-  @authentication @positive
+  @authentication @positive @e2e
   Scenario: To verify the authentication end point with valid credentials and perform schema validation
     Given User logs in with "admin" and "password"
     When User makes a "POST" action to the "postAuthEndpoint" with ""

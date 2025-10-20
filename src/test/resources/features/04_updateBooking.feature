@@ -17,7 +17,7 @@ Feature: To validate the update booking API endpoint
     Then The system should respond with status "201"
     And Store "bookingid" from response as "bookingID" in config file
 
-  @updateBooking @positive
+  @updateBooking @positive @e2e
   Scenario: To verify the update booking endpoint with valid payload.
     Given User creates or modifies booking with:
       | key         | value                |
