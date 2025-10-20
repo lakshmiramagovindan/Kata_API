@@ -1,56 +1,22 @@
 package com.booking.stepDefinitions;
 
+import com.booking.context.ScenarioContextHolder;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
 import org.junit.Assert;
+
 import java.io.IOException;
+import java.util.Map;
+
 import static com.booking.utils.Utils.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
-/**
- * Step definitions for common API actions and validations.
- */
-public class CommonStepDefinitions {
-    /** Used to extract values from JSON responses. */
-    JsonPath json;
-
-    /**
-     * Sends an HTTP request to the specified endpoint using the given method.
-     *
-     * @param httpMethod   HTTP method (e.g., GET, POST, PUT, DELETE)
-     * @param endPointKey  Key representing the API endpoint
-     */
-    @When("User makes a {string} action to the {string}")
-    public void userMakesAActionToTheEndpoint(String httpMethod, String endPointKey) {
-        String method = validHttpMethodCheck(httpMethod);
-        String endPoint = validEndPointCheck(endPointKey);
-        res = req
-                .when()
-                .request(method, endPoint);
-
-    }
-    /**
-     * Sends an authenticated HTTP request to the specified endpoint.
-     *
-     * @param httpMethod   HTTP method
-     * @param endPointKey  Endpoint key
-     * @param configKey    Key for retrieving the token from config
-     */
-    @When("User makes a {string} action to the {string} via {string}")
-    public void userMakesAActionToTheEndpointViaAuthentication(String httpMethod, String endPointKey, String configKey) throws IOException {
-        String method = validHttpMethodCheck(httpMethod);
-        String endPoint = validEndPointCheck(endPointKey);
-        String configValue = requestWithOrWithoutAuthentication(configKey);
-        res = req
-                .auth().oauth2(configValue)
-                .when()
-                .request(method, endPoint);
-    }
+public class ResponseStepDefinitions {
 
     /**
      * Verifies that the response status code matches the expected value.
@@ -59,6 +25,7 @@ public class CommonStepDefinitions {
      */
     @Then("The system should respond with status {string}")
     public void theSystemShouldRespondWithStatus(String statusCode) {
+        Response res = ScenarioContextHolder.getContext().getRes();
         Assert.assertEquals(res.getStatusCode(), Integer.parseInt(statusCode));
     }
 
@@ -69,6 +36,7 @@ public class CommonStepDefinitions {
      */
     @Then("The system should respond with description {string}")
     public void theSystemShouldRespondWithDescription(String statusLine) {
+        Response res = ScenarioContextHolder.getContext().getRes();
         assertThat(res.getStatusLine(), containsString(statusLine));
     }
 
@@ -79,26 +47,55 @@ public class CommonStepDefinitions {
      */
     @And("{string} in response should not be empty")
     public void inResponseShouldNotBeEmpty(String responseKey) {
-        json = res.jsonPath();
+        Response res = ScenarioContextHolder.getContext().getRes();
+        JsonPath json = res.jsonPath();
         Assert.assertNotNull(json.get(responseKey));
     }
 
     /**
      * Validates that a field in the response body matches the expected value.
-     * Also processes the expected value for date formatting.
      *
      * @param key              JSON key to check
      * @param expectedRawValue expected value before formatting
      */
     @And("{string} in response body should be {string}")
     public void inResponseBodyShouldBe(String key, String expectedRawValue) {
+        Response res = ScenarioContextHolder.getContext().getRes();
         JsonPath json = res.jsonPath();
         Object responseValue = json.get(key);
+
         Assert.assertNotNull(responseValue);
         String expectedValue = processDate(sanitizeDateValue(expectedRawValue));
         String actualAsString = convertActualValue(responseValue);
 
         Assert.assertEquals(actualAsString.replace("[\\[\\]]", " ").trim(), expectedValue);
+    }
+
+    /**
+     * Validates multiple response fields and conditions from a DataTable.
+     * DataTable columns: field | condition | expected value (optional)
+     * Example table:
+     * | field               | condition | expected value         |
+     * | bookingid           | not empty |                        |
+     * | firstname           | equals    | John                   |
+     * | depositpaid         | equals    | true                   |
+     * | bookingdates.checkin| not empty |                        |
+     */
+    @Then("the response fields should match:")
+    public void validateResponseFields(DataTable dataTable) {
+        for (Map<String, String> row : dataTable.asMaps(String.class, String.class)) {
+            String field = row.get("field");
+            String condition = row.get("condition").toLowerCase();
+            String expectedValue = row.get("expected value");
+
+            if ("equals".equalsIgnoreCase(condition)) {
+                inResponseBodyShouldBe(field, expectedValue);
+            } else if ("not empty".equalsIgnoreCase(condition)) {
+                inResponseShouldNotBeEmpty(field);
+            } else {
+                throw new IllegalArgumentException(String.format("Unsupported condition: %s", condition));
+            }
+        }
     }
 
     /**
@@ -108,10 +105,10 @@ public class CommonStepDefinitions {
      */
     @Then("Response should match the {string} schema")
     public void shouldMatchTheSchema(String schemaFileName) {
-        if(schemaFileName != null && !schemaFileName.trim().isEmpty()) {
-            res.then()
-                    .assertThat()
-                    .body(matchesJsonSchemaInClasspath("config/"+schemaFileName+".json"));
+        Response res = ScenarioContextHolder.getContext().getRes();
+        if (schemaFileName != null && !schemaFileName.trim().isEmpty()) {
+            res.then().assertThat()
+                    .body(matchesJsonSchemaInClasspath("config/" + schemaFileName + ".json"));
         } else {
             res.then();
         }
@@ -125,30 +122,13 @@ public class CommonStepDefinitions {
      */
     @And("Store {string} from response as {string} in config file")
     public void storeFromResponseAsInConfigFile(String responseKey, String configKey) throws IOException {
-        json = res.jsonPath();
+        Response res = ScenarioContextHolder.getContext().getRes();
+        JsonPath json = res.jsonPath();
         Object rawValue = json.get(responseKey);
-        String configValue;
-        if (rawValue instanceof Integer) {
-            configValue = String.valueOf(rawValue);
-        } else if (rawValue instanceof String) {
-            configValue = (String) rawValue;
-        } else {
-            return;
-        }
-        writePropertyFile(configKey, configValue);
-    }
 
-    /**
-     * Prepares the request with a path parameter and login token as a cookie.
-     *
-     * @param pathParam    the key for the path parameter value from config
-     * @param cookieToken  the key for the token to be added in the Cookie header
-     */
-    @Given("User sends basic information {string} and the login token {string}")
-    public void userSendsBasicInformationAndTheLoginToken(String pathParam, String cookieToken) throws IOException {
-        String configValue = requestWithOrWithoutAuthentication(cookieToken);
-        req = req
-                .pathParam("id", readPropertyFile(pathParam))
-                .header("Cookie", "token=" + configValue);
+        if (rawValue != null) {
+            String valueToStore = String.valueOf(rawValue);
+            writePropertyFile(configKey, valueToStore);
+        }
     }
 }
