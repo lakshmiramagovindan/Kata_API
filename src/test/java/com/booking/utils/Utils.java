@@ -5,7 +5,6 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -22,13 +21,6 @@ import java.util.stream.Collectors;
  * including request setup, configuration management, and data processing.
  */
 public class Utils {
-
-    /** Shared RequestSpecification object used across tests. */
-    public static RequestSpecification req;
-
-    /** Shared Response object holding API responses. */
-    public static Response res;
-
     /** Properties object to read/write config properties. */
     static Properties prop;
 
@@ -45,16 +37,13 @@ public class Utils {
      * @return the configured RequestSpecification
      */
     public static RequestSpecification baseRequestSpecification() {
-        if (req == null) {
-            req = new RequestSpecBuilder()
+            return new RequestSpecBuilder()
                     .setBaseUri(Routes.getEndpoint("baseURI"))
                     .addFilter(new RequestLoggingFilter(System.out))
                     .addFilter(new ResponseLoggingFilter(System.out))
                     .setContentType(ContentType.JSON)
                     .setAccept(ContentType.JSON)
                     .build();
-        }
-        return req;
     }
 
     /**
