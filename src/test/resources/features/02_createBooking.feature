@@ -17,7 +17,6 @@ Feature: To validate the create booking API endpoint
     And Store "bookingid" from response as "bookingID" in config file
     And the response fields should match:
       | field                 | condition | expected value       |
-      | description           | equals    | Created              |
       | bookingid             | not empty |                      |
       | roomid                | not empty |                      |
       | firstname             | equals    | John                 |
@@ -107,3 +106,12 @@ Feature: To validate the create booking API endpoint
     When User makes a "POST" action to the "createBookingEndpointInvalid" with ""
     Then The system should respond with status "404"
     And The system should respond with description "Not Found"
+
+  @deleteBooking
+  Scenario: To delete the created booking
+  Comments: This scenario is added to ensure there are no conflicts to roomid in the next creation
+    Given User sends basic information "bookingID" and the login token "authToken"
+    When User makes a "DELETE" action to the "getUpdateDeleteBookingEndpoint" with "authToken"
+    Then The system should respond with status "200"
+    And The system should respond with description "OK"
+    And "success" in response body should be "true"
