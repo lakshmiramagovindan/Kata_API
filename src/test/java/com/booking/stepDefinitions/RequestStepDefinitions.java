@@ -59,7 +59,8 @@ public class RequestStepDefinitions {
                                 .getReq()
                                 .body(payload.createBookingPayload(booking)));
     }
-    @When("User makes a {string} action to the {string} with {string}")
+    //@When("User makes a {string} action to the {string}")
+    @When("^User makes a \"(GET|POST|PUT|DELETE)\" action to the \"([^\"]+)\"(?: with \"([^\"]+)\")?$")
     public void userMakesAActionToTheEndpoint(String httpMethod, String endPointKey, String authPart) throws IOException {
         String method = validHttpMethodCheck(httpMethod);
         String endPoint = validEndPointCheck(endPointKey);
@@ -69,7 +70,8 @@ public class RequestStepDefinitions {
 
         // If authPart is like "authToken", extract token key; else no auth
         if (authPart != null && !authPart.trim().isEmpty()) {
-            String token = requestWithOrWithoutAuthentication(authPart);
+            String configKey = authPart.trim().substring(5).trim();
+            String token = requestWithOrWithoutAuthentication(configKey);
 
             res = req
                     .auth().oauth2(token)
