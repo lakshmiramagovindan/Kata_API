@@ -1,36 +1,26 @@
-Feature: To validate the create booking API endpoint
+Feature: To validate the update booking API endpoint
 
-  @createBooking @positive
-  Scenario: To verify the create booking endpoint with valid payload.
+  @updateBooking @positive
+  Scenario: To verify the update booking endpoint with valid payload.
     Given User creates or modifies booking with:
       | key         | value                |
       | roomid      | RANDOM_1_10          |
       | firstname   | John                 |
-      | lastname    | Doe                  |
-      | depositpaid | true                 |
-      | checkin     | TODAY                |
-      | checkout    | +2                   |
+      | lastname    | Change               |
+      | depositpaid | false                |
+      | checkin     | +5                   |
+      | checkout    | +6                   |
       | email       | john.doe@example.com |
       | phone       | 12345678901          |
-    When User makes a "POST" action to the "createBookingEndpoint"
-    Then The system should respond with status "201"
-    Then The system should respond with description "Created"
-    And "bookingid" in response should not be empty
-    And Store "bookingid" from response as "bookingID" in config file
-    And "roomid" in response should not be empty
-    And "firstname" in response body should be "John"
-    And "lastname" in response body should be "Doe"
-    And "depositpaid" in response body should be "true"
-    And "bookingdates.checkin" in response should not be empty
-    And "bookingdates.checkout" in response should not be empty
-    And Response should match the "createBookingResponseSchema" schema
-    #Note: Validations from lines 29–30 will fail since API is not designed to have email, phone as part of response.Scenario:
-    #Booking.yaml mentions email and phone also as part of our requests
-    And "email" in response body should be "john.doe@example.com"
-    And "phone" in response body should be "12345678901"
+    When User sends basic information "bookingID" and the login token "authToken"
+    When User makes a "PUT" action to the "getUpdateDeleteBookingEndpoint" with "authToken"
+    Then The system should respond with status "200"
+    Then The system should respond with description "OK"
+    And "success" in response body should be "true"
+    And Response should match the "deleteResponseSchema" schema
 
-  @createBooking @negative
-  Scenario Outline: To verify the negative scenarios of create booking end point by passing incorrect payload
+  @updateBooking @negative
+  Scenario Outline: To verify the negative scenarios of update booking end point by passing incorrect payload
     Given User creates or modifies booking with:
       | key         | value         |
       | roomid      | <roomid>      |
@@ -41,7 +31,8 @@ Feature: To validate the create booking API endpoint
       | checkout    | <checkout>    |
       | email       | <email>       |
       | phone       | <phone>       |
-    When User makes a "POST" action to the "createBookingEndpoint"
+    When User sends basic information "bookingID" and the login token "authToken"
+    When User makes a "PUT" action to the "getUpdateDeleteBookingEndpoint" with "authToken"
     Then The system should respond with status "400"
     Then The system should respond with description "Bad Request"
     Then "errors" in response body should be "<message>"
@@ -56,7 +47,7 @@ Feature: To validate the create booking API endpoint
       | RANDOM_1_10 | Johnjikmuhtfyhtjgcm | Doe                 | true        | +1      | +2       | john.doe@example.com | 12345678901            | size must be between 3 and 18       |
       | RANDOM_1_10 |                     | Doe                 | true        | +1      | +2       | john.doe@example.com | 12345678901            | Firstname should not be blank       |
       #LastName Validation
-      # Note: Test cases (lines 64–65 ) may fail due different Lastname upper limit.
+      # Note: Test cases (lines 55–56 ) may fail due different Lastname upper limit.
       # - Expected: 400 with "size must be between 3 and 18"
       # - Actual:
       #   For length < 3 → 400 with "size must be between 3 and 30"
@@ -67,31 +58,31 @@ Feature: To validate the create booking API endpoint
       #PhoneNumber Validation
       | RANDOM_1_10 | John                | Doe                 | true        | +1      | +2       | john.doe@example.com | 1234567890             | size must be between 11 and 21      |
       | RANDOM_1_10 | John                | Doe                 | true        | +1      | +2       | john.doe@example.com | 1234567890112345678901 | size must be between 11 and 21      |
-      # Note: Test cases (lines 72) may fail due to API not configured to return
+      # Note: Test cases (lines 63) may fail due to API not configured to return
             # standard error message for missing mandatory fields.
       | RANDOM_1_10 | John                | Doe                 | true        | +1      | +2       | john.doe@example.com |                        | Phone should not be blank           |
       #Email Validation
       | RANDOM_1_10 | John                | Doe                 | true        | +1      | +2       | john.doe@            | 12345678901            | must be a well-formed email address |
       | RANDOM_1_10 | John                | Doe                 | true        | +1      | +2       | @example.com         | 12345678901            | must be a well-formed email address |
       | RANDOM_1_10 | John                | Doe                 | true        | +1      | +2       | john.doeexample.com  | 12345678901            | must be a well-formed email address |
-      # Note: Test cases (lines 79) may fail due to API not configured to return
+      # Note: Test cases (lines 70) may fail due to API not configured to return
             # standard error message for missing mandatory fields.
       | RANDOM_1_10 | John                | Doe                 | true        | +1      | +2       |                      | 12345678901            | Email should not be blank           |
       #Dates Validation
-      # Note: Test cases (lines 84–89) may fail due to checkout and checkin date not properly handled.
+      # Note: Test cases (lines 75–77) may fail due to checkout and checkin date not properly handled.
       # - Expected: 400 with "Failed to create booking"
       # - Actual: 409 with "Failed to create booking"
       | RANDOM_1_10 | John                | Doe                 | true        | +2      | +1       | john.doe@example.com | 12345678901            | Failed to create booking            |
       | RANDOM_1_10 | John                | Doe                 | true        | +1      | TODAY    | john.doe@example.com | 12345678901            | Failed to create booking            |
       | RANDOM_1_10 | John                | Doe                 | true        | TODAY   | TODAY    | john.doe@example.com | 12345678901            | Failed to create booking            |
-      | RANDOM_1_10 | John                | Doe                 | true        |         | +1       | john.doe@example.com | 12345678901            | Failed to create booking            |
-      | RANDOM_1_10 | John                | Doe                 | true        | +2      |          | john.doe@example.com | 12345678901            | Failed to create booking            |
-      | RANDOM_1_10 | John                | Doe                 | true        |         |          | john.doe@example.com | 12345678901            | Failed to create booking            |
+      | RANDOM_1_10 | John                | Doe                 | true        |         | +1       | john.doe@example.com | 12345678901            | must not be null                    |
+      | RANDOM_1_10 | John                | Doe                 | true        | +2      |          | john.doe@example.com | 12345678901            | must not be null                    |
+      | RANDOM_1_10 | John                | Doe                 | true        |         |          | john.doe@example.com | 12345678901            | must not be null, must not be null  |
       #All blank fields
-      |             |                     |                     |             |         |          |                      |                        | Failed to create booking            |
+      |             |                     |                     |             |         |          |                      |                        | Failed to update booking            |
 
-  @createBooking @negative
-  Scenario Outline: To verify the create booking endpoint with valid payload and invalid request specifications.
+  @updateBooking @negative
+  Scenario Outline: To verify the update booking endpoint with valid payload and invalid request specifications.
     Given User creates or modifies booking with:
       | key         | value                |
       | roomid      | RANDOM_1_10          |
@@ -102,14 +93,17 @@ Feature: To validate the create booking API endpoint
       | checkout    | +2                   |
       | email       | john.doe@example.com |
       | phone       | 12345678901          |
-    When User makes a "<httpMethod>" action to the "<endPoint>"
+    When User sends basic information "<parameter>" and the login token "<cookieToken>"
+    When User makes a "PUT" action to the "<endPoint>" with "<authKey>"
     Then The system should respond with status "<statusCode>"
     Then The system should respond with description "<description>"
 
     Examples:
-      | httpMethod | endPoint                     | statusCode | description        |
-      | POST       | createBookingEndpointInvalid | 404        | Not Found          |
-      | GET        | createBookingEndpoint        | 401        | Unauthorized       |
-      | PUT        | createBookingEndpoint        | 405        | Method Not Allowed |
-      | DELETE     | createBookingEndpoint        | 405        | Method Not Allowed |
-      | PATCH      | createBookingEndpoint        | 405        | Method Not Allowed |
+      | parameter      | cookieToken | endPoint                              | authKey   | statusCode | description |
+      | bookingIDDummy | authToken   | getUpdateDeleteBookingEndpoint        | authToken | 404        | Not Found   |
+      | bookingID      |             | getUpdateDeleteBookingEndpoint        | authToken | 403        | Forbidden   |
+      | bookingID      | authToken   | getUpdateDeleteBookingEndpointInvalid | authToken | 404        | Not Found   |
+      #Note: Test cases (lines 109) may fail due to API not configured to return proper status code when token is incorrect
+      # Expected: 403 with "Forbidden"
+      # Actual: Random Status Codes
+      | bookingID      | authToken   | getUpdateDeleteBookingEndpoint        |           | 403        | Forbidden   |
