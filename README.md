@@ -229,8 +229,8 @@ Open the HTML report in any browser for detailed scenario results.
 
 ## 10. 🔍 Observations
 
-All observations (open issues) with respect to various test scenarios, swaggers and booking websites are listed below.
-Also, please note that some tests have comments related to the observation and those tests will fail.
+All observations (open issues) with respect to various test scenarios, swaggers and booking websites are listed below.     
+Also, please note that some tests have comments referencing these issues and may fail intentionally to highlight inconsistencies or bugs.
 
 1. **Swagger Documentation** – The Swagger documentation URL returns a **404 Not Found** error.
 
@@ -255,7 +255,8 @@ Also, please note that some tests have comments related to the observation and t
 
 10. **Delete Booking API Error Handling** – When booking ID, authentication token, or cookies are missing or invalid, the API responds with **500 Internal Server Error** instead of an appropriate **4xx** client error status code (e.g., 400, 401, or 403).
 
-
+11. **Random 5XX Series Errors** –
+    The server occasionally responds with random 5XX series errors (e.g., 500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable) even when the request is valid and well-formed.
 ---
 
 **Author:** R G Lakshmi  
