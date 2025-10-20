@@ -14,7 +14,8 @@ Feature: To validate the create booking API endpoint
       | phone       | 12345678901          |
     When User makes a "POST" action to the "createBookingEndpoint" with ""
     Then The system should respond with status "201"
-    Then the response fields should match:
+    And Store "bookingid" from response as "bookingID" in config file
+    And the response fields should match:
       | field                 | condition | expected value       |
       | description           | equals    | Created              |
       | bookingid             | not empty |                      |
@@ -44,8 +45,8 @@ Feature: To validate the create booking API endpoint
       | phone       | <phone>       |
     When User makes a "POST" action to the "createBookingEndpoint" with ""
     Then The system should respond with status "400"
-    Then The system should respond with description "Bad Request"
-    Then "errors" in response body should be "<message>"
+    And The system should respond with description "Bad Request"
+    And "errors" in response body should be "<message>"
     And Response should match the "createBookingErrorSchema" schema
 
     Examples:
@@ -105,4 +106,4 @@ Feature: To validate the create booking API endpoint
       | phone       | 12345678901          |
     When User makes a "POST" action to the "createBookingEndpointInvalid" with ""
     Then The system should respond with status "404"
-    Then The system should respond with description "Not Found"
+    And The system should respond with description "Not Found"

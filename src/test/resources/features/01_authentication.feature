@@ -15,7 +15,7 @@ Feature: To validate the authentication for the API endpoints
     Given User logs in with "<username>" and "<password>"
     When User makes a "POST" action to the "<endPoint>" with ""
     Then The system should respond with status "<statusCode>"
-    Then The system should respond with description "<description>"
+    And The system should respond with description "<description>"
     And Response should match the "<schemaFileName>" schema
 
     Examples:
